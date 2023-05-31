@@ -1,0 +1,34 @@
+package com.gdu.app11.batch;
+
+import java.io.File;
+
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.gdu.app11.util.MyFileUtil;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@EnableScheduling
+@Component
+public class RemoveTempfileScheduler {
+
+	// 임시 폴더(temp)의 모든 파일을 매일 새벽 3시에 지우는 스케쥴러
+	private final MyFileUtil myFileUtil;
+	
+	@Scheduled(cron="0 0 3 1/1 * ?") // www.cronmaker.com에서 생성한 크론식의 마지막 *는 지워야함
+	public void execute() { // 메소드명은 아무 의미 없다.
+		
+		// 임시 폴더의 File 객체
+		File dir = new File(myFileUtil.getTempPath());
+		
+		// 임시 폴더가 존재하면 폴더 내의 모든 파일을 가져와서 하나씩 삭제
+		if(dir.exists()) {
+			for(File file : dir.listFiles()) {
+				file.delete();
+			}
+		}
+	}
+}

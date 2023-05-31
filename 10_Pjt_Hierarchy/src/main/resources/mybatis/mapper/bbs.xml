@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 @Mapper의 경로를 	지정한다. -->
+<mapper namespace="com.gdu.app10.mapper.BbsMapper">
+		
+	<select id="getBbsCount" resultType="int">
+		SELECT COUNT(*)
+		  FROM BBS
+	</select>
+	
+	<select id="getBbsList" parameterType="Map" resultType="BbsDTO">
+		SELECT A.BBS_NO, A.WRITER, A.TITLE, A.IP, A.CREATED_AT, A.STATE, A.DEPTH, A.GROUP_NO, A.GROUP_ORDER
+		  FROM (SELECT BBS_NO, WRITER, TITLE, IP, CREATED_AT, STATE, DEPTH, GROUP_NO, GROUP_ORDER
+		  		  FROM BBS) A
+		 ORDER BY GROUP_NO DESC, GROUP_ORDER ASC
+	     LIMIT #{begin}, #{recordPerPage}
+	</select>
+	
+	<!-- 원글 달기 1  -->
+	<!-- 
+		<insert id="addBbs" useGeneratedKeys="true" keyProperty="bbsNo" parameterType="BbsDTO">
+		자동 증가(AUTO_INCREMENT)한 BBS_NO값을 파라미터로 전달한 BbsDTO	
+	 -->
+	<insert id="addBbs" useGeneratedKeys="true" keyProperty="bbsNo" parameterType="BbsDTO">
+		INSERT INTO BBS (
+			  WRITER
+			, TITLE
+			, IP
+			, CREATED_AT
+			, STATE
+			, DEPTH
+			, GROUP_ORDER
+		)
+		VALUES (
+			  #{writer}
+			, #{title}
+			, #{ip}
+			, NOW()
+			, 1
+			, 0
+			, 0
+		)
+	</insert>
+	
+	<!-- 원글 달기 2  -->
+	<update id="addBbsGroupNo" parameterType="BbsDTO">
+		UPDATE BBS
+		   SET GROUP_NO = #{bbsNo}
+		 WHERE BBS_NO = #{bbsNo}  
+	</update>
+	
+	<!-- 삭제 -->
+	<update id="removeBbs" parameterType="int">
+		UPDATE BBS
+		   SET STATE = 0
+		 WHERE BBS_NO = #{bbsNo}
+	</update>
+	
+	<!-- 기존 답글 선행작업 -->
+	<update id="increaseGroupOrder" parameterType="BbsDTO"> <!-- parameterType의 BbsDTO는 원글의 정보를 의미 -->	
+		UPDATE BBS
+		   SET GROUP_ORDER = GROUP_ORDER + 1 
+		 WHERE GROUP_NO = #{groupNo} <!-- groupNo는 원글의 groupNo이다.	 -->
+		   AND GROUP_ORDER > #{groupOrder} <!-- groupOrder는 원글의 groupOrder이다.	 -->	
+	</update>
+	
+	<!-- 답글 달기 -->
+	<insert id="addReply" parameterType="BbsDTO"> <!-- parameterType의 BbsDTO는 답글의 정보를 의미 -->	
+		INSERT INTO BBS (
+			  WRITER
+			, TITLE
+			, IP
+			, CREATED_AT
+			, STATE
+			, DEPTH
+			, GROUP_NO
+			, GROUP_ORDER
+		)
+		VALUES (
+			    #{writer}
+			  , #{title}
+			  , #{ip}
+			  , NOW()
+			  , 1
+			  , #{depth}
+			  , #{groupNo}
+			  , #{groupOrder}
+		)
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+</mapper>

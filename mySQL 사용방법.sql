@@ -1,0 +1,16 @@
+-- 사용할 스키마 지정하기
+USE gdj61;
+
+-- 테이블 삭제
+DROP TABLE IF EXISTS SAMPLE;
+
+-- 테이블 생성
+CREATE TABLE SAMPLE (
+	SAMPLE_NO 	INT 		NOT NULL AUTO_INCREMENT,
+    SAMPLE_TEXT VARCHAR(20),
+    SAMPLE_DT	DATETIME,
+    CONSTRAINT PK_SAMPLE PRIMARY KEY(SAMPLE_NO) -- 기본키 지정이 테이블 생성에 존재해야 한다.
+);
+
+-- 전체 실행 : COMMAND + SHIFT + ENTER
+-- 개별 실행 : 쿼리문 선택 후 COMMAND + ENTER

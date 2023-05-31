@@ -1,0 +1,83 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}" />
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="${contextPath}/resources/js/lib/jquery-3.6.4.min.js"></script>
+<script>
+	
+	var frm;
+
+	$(function() {
+		frm = $('#frm');
+	})
+	function fnRemoveUpload(){
+		if(confirm('게시글을 삭제하겠습니까?') == false) {
+			return;
+		}
+			frm.prop('action', '${contextPath}/upload/removeUpload.do');
+			frm.submit();
+	}
+	
+	function fnEditPage(uploadNo) {
+		location.href="${contextPath}/upload/editPage.do?uploadNo=" + uploadNo;		
+	}
+	
+</script>
+</head>
+<body>
+
+	<div>
+		<h1>${upload.uploadNo}번 게시글</h1>
+		<ul>
+			<li>제목 : ${upload.uploadTitle}</li>
+			<li>내용 : ${upload.uploadContent}</li>
+			<li>작성일자 : ${upload.createdAt}</li>
+			<li>수정일자 : ${upload.modifiedAt}</li>
+		</ul>
+		<form method="post"	id="frm">
+			<input type="hidden" name="uploadNo" value="${upload.uploadNo}">
+			<input type="button" value="삭제" onclick="fnRemoveUpload()">
+		</form>
+		<input type="button" value="편집" onclick="fnEditPage(${upload.uploadNo})">
+		
+	</div>
+	
+	<hr>
+	
+	<div>
+		<h4>첨부 목록 및 다운로드</h4>
+		<c:if test="${empty attachList}">
+			<div>첨부된 파일이 없습니다.</div>
+		</c:if>
+		<c:if test="${not empty attachList}">
+		<div>
+			<c:forEach items="${attachList}" var="attach">
+				<div>
+					<a href='${contextPath}/upload/download.do?attachNo=${attach.attachNo}'>
+						<c:if test="${attach.hasThumbnail == 1}">
+							<img src="${contextPath}/upload/display.do?attachNo=${attach.attachNo}">
+						</c:if>
+						<c:if test="${attach.hasThumbnail == 0}">
+							<img src="${contextPath}/resources/images/attach1.png" width="50px">
+						</c:if>
+						${attach.originName}
+					</a>
+					
+					<!-- 해당 첨부 삭제 버튼 만들기 -->
+				</div>
+			</c:forEach>
+			<div>
+				<a href='${contextPath}/upload/downloadAll.do?uploadNo=${upload.uploadNo}'>모두 다운로드</a>
+			</div>
+		</div>
+		</c:if>
+	</div>
+</body>
+</html>
